@@ -15,6 +15,8 @@ import android.util.Log;
 
 import com.baidu.android.pushservice.PushConstants;
 import com.baidu.android.pushservice.PushManager;
+import com.yuncore.android.AndRemote;
+import com.yuncore.android.andremote.AndRemoteImpl;
 
 /**
  * The class <code>BaiduPushService</code>
@@ -24,7 +26,9 @@ import com.baidu.android.pushservice.PushManager;
  */
 public class BaiduPushService extends Service {
 
-	final static String TAG = "PushService";
+	final static String TAG = "BaiduPushService";
+
+	private AndRemote andRemote = new AndRemoteImpl();
 
 	/*
 	 * (non-Javadoc)
@@ -34,9 +38,21 @@ public class BaiduPushService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		andRemote.init(this);
 		PushManager.startWork(getApplicationContext(),
 				PushConstants.LOGIN_TYPE_API_KEY,
 				getMetaValue(getApplicationContext(), "api_key"));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Service#onDestroy()
+	 */
+	@Override
+	public void onDestroy() {
+		andRemote.destory(this);
+		super.onDestroy();
 	}
 
 	/*

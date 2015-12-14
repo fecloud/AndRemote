@@ -5,11 +5,9 @@ package com.yuncore.android.receiver;
 
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.text.TextUtils;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.baidu.android.pushservice.PushMessageReceiver;
@@ -21,8 +19,12 @@ import com.baidu.android.pushservice.PushMessageReceiver;
  * @version 1.0
  */
 public class BaiduPushReceiver extends PushMessageReceiver {
-	/** TAG to Log */
+
 	public static final String TAG = BaiduPushReceiver.class.getSimpleName();
+
+	public static final String ACTION_ONBIND = "com.yuncore.andremote.action.OnBind";
+
+	public static final String ACTION_ONMESSAGE = "com.yuncore.andremote.action.OnMessage";
 
 	/**
 	 * 调用PushManager.startWork后，sdk将对push
@@ -44,19 +46,19 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	 * @return none
 	 */
 	@Override
-	public void onBind(Context context, int errorCode, String appid,
+	public void onBind(Context mContext, int errorCode, String appid,
 			String userId, String channelId, String requestId) {
-		String responseString = "onBind errorCode=" + errorCode + " appid="
-				+ appid + " userId=" + userId + " channelId=" + channelId
-				+ " requestId=" + requestId;
-		Log.d(TAG, responseString);
+		Log.d(TAG, "onBind");
+		final Bundle bundle = new Bundle();
+		bundle.putInt("ErrorCode", errorCode);
+		bundle.putString("AppId", appid);
+		bundle.putString("UserId", userId);
+		bundle.putString("ChannelId", channelId);
+		bundle.putString("RequestId", requestId);
 
-		if (errorCode == 0) {
-			// 绑定成功
-			Log.d(TAG, "绑定成功");
-		}
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, responseString);
+		Intent intent = new Intent(ACTION_ONBIND);
+		intent.putExtras(bundle);
+		mContext.sendBroadcast(intent);
 	}
 
 	/**
@@ -70,29 +72,18 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	 *            自定义内容,为空或者json字符串
 	 */
 	@Override
-	public void onMessage(Context context, String message,
+	public void onMessage(Context mContext, String message,
 			String customContentString) {
-		String messageString = "透传消息 message=\"" + message
-				+ "\" customContentString=" + customContentString;
-		Log.d(TAG, messageString);
+		
+		Log.d(TAG, "onMessage");
+		final Bundle bundle = new Bundle();
+		bundle.putString("Message", message);
+		bundle.putString("CustomContentString", customContentString);
 
-		// 自定义内容获取方式，mykey和myvalue对应透传消息推送时自定义内容中设置的键和值
-		if (!TextUtils.isEmpty(customContentString)) {
-			JSONObject customJson = null;
-			try {
-				customJson = new JSONObject(customContentString);
-				String myvalue = null;
-				if (!customJson.isNull("mykey")) {
-					myvalue = customJson.getString("mykey");
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		Intent intent = new Intent(ACTION_ONMESSAGE);
+		intent.putExtras(bundle);
+		mContext.sendBroadcast(intent);
 
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, messageString);
 	}
 
 	/**
@@ -110,27 +101,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	@Override
 	public void onNotificationClicked(Context context, String title,
 			String description, String customContentString) {
-		String notifyString = "通知点击 title=\"" + title + "\" description=\""
-				+ description + "\" customContent=" + customContentString;
-		Log.d(TAG, notifyString);
-
-		// 自定义内容获取方式，mykey和myvalue对应通知推送时自定义内容中设置的键和值
-		if (!TextUtils.isEmpty(customContentString)) {
-			JSONObject customJson = null;
-			try {
-				customJson = new JSONObject(customContentString);
-				String myvalue = null;
-				if (!customJson.isNull("mykey")) {
-					myvalue = customJson.getString("mykey");
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, notifyString);
 	}
 
 	/**
@@ -149,29 +119,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	@Override
 	public void onNotificationArrived(Context context, String title,
 			String description, String customContentString) {
-
-		String notifyString = "onNotificationArrived  title=\"" + title
-				+ "\" description=\"" + description + "\" customContent="
-				+ customContentString;
-		Log.d(TAG, notifyString);
-
-		// 自定义内容获取方式，mykey和myvalue对应通知推送时自定义内容中设置的键和值
-		if (!TextUtils.isEmpty(customContentString)) {
-			JSONObject customJson = null;
-			try {
-				customJson = new JSONObject(customContentString);
-				String myvalue = null;
-				if (!customJson.isNull("mykey")) {
-					myvalue = customJson.getString("mykey");
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		// 你可以參考 onNotificationClicked中的提示从自定义内容获取具体值
-		updateContent(context, notifyString);
 	}
 
 	/**
@@ -191,13 +138,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	@Override
 	public void onSetTags(Context context, int errorCode,
 			List<String> sucessTags, List<String> failTags, String requestId) {
-		String responseString = "onSetTags errorCode=" + errorCode
-				+ " sucessTags=" + sucessTags + " failTags=" + failTags
-				+ " requestId=" + requestId;
-		Log.d(TAG, responseString);
-
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, responseString);
 	}
 
 	/**
@@ -217,13 +157,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	@Override
 	public void onDelTags(Context context, int errorCode,
 			List<String> sucessTags, List<String> failTags, String requestId) {
-		String responseString = "onDelTags errorCode=" + errorCode
-				+ " sucessTags=" + sucessTags + " failTags=" + failTags
-				+ " requestId=" + requestId;
-		Log.d(TAG, responseString);
-
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, responseString);
 	}
 
 	/**
@@ -241,12 +174,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	@Override
 	public void onListTags(Context context, int errorCode, List<String> tags,
 			String requestId) {
-		String responseString = "onListTags errorCode=" + errorCode + " tags="
-				+ tags;
-		Log.d(TAG, responseString);
-
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, responseString);
 	}
 
 	/**
@@ -261,18 +188,6 @@ public class BaiduPushReceiver extends PushMessageReceiver {
 	 */
 	@Override
 	public void onUnbind(Context context, int errorCode, String requestId) {
-		String responseString = "onUnbind errorCode=" + errorCode
-				+ " requestId = " + requestId;
-		Log.d(TAG, responseString);
-
-		if (errorCode == 0) {
-			// 解绑定成功
-			Log.d(TAG, "解绑成功");
-		}
-		// Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
-		updateContent(context, responseString);
 	}
 
-	private void updateContent(Context context, String content) {
-	}
 }
