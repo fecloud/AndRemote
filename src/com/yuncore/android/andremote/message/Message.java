@@ -15,6 +15,10 @@ import org.json.JSONObject;
 public abstract class Message {
 
 	private int type;
+	
+	private String identify;
+	
+	private String channel_id;
 
 	public int getType() {
 		return type;
@@ -22,6 +26,22 @@ public abstract class Message {
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public String getIdentify() {
+		return identify;
+	}
+
+	public void setIdentify(String identify) {
+		this.identify = identify;
+	}
+
+	public String getChannelId() {
+		return channel_id;
+	}
+
+	public void setChannelId(String channel_id) {
+		this.channel_id = channel_id;
 	}
 
 	public Message() {
@@ -36,6 +56,12 @@ public abstract class Message {
 			if (jsonObject.has("type")) {
 				type = jsonObject.getInt("type");
 			}
+			if (jsonObject.has("identify")) {
+				identify = jsonObject.getString("identify");
+			}
+			if (jsonObject.has("channel_id")) {
+				channel_id = jsonObject.getString("channel_id");
+			}
 		} catch (JSONException e) {
 		}
 	}
@@ -43,6 +69,8 @@ public abstract class Message {
 	public JSONObject toJSON(JSONObject jsonObject) {
 		try {
 			jsonObject.put("type", type);
+			jsonObject.put("identify", identify);
+			jsonObject.put("channel_id", channel_id);
 		} catch (JSONException e) {
 		}
 		return jsonObject;

@@ -20,9 +20,9 @@ public class BindMessage extends Message {
 
 	private String userId;
 
-	private String channelId;
-
 	private String requestId;
+	
+	private String ext;
 
 	public BindMessage(JSONObject jsonObject) {
 		super(jsonObject);
@@ -52,20 +52,20 @@ public class BindMessage extends Message {
 		this.userId = userId;
 	}
 
-	public String getChannelId() {
-		return channelId;
-	}
-
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
-	}
-
 	public String getRequestId() {
 		return requestId;
 	}
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getExt() {
+		return ext;
+	}
+
+	public void setExt(String ext) {
+		this.ext = ext;
 	}
 
 	/*
@@ -89,14 +89,30 @@ public class BindMessage extends Message {
 			if (jsonObject.has("userId")) {
 				userId = jsonObject.getString("userId");
 			}
-			if (jsonObject.has("channelId")) {
-				channelId = jsonObject.getString("channelId");
-			}
 			if (jsonObject.has("requestId")) {
 				requestId = jsonObject.getString("requestId");
 			}
+			if (jsonObject.has("ext")) {
+				ext = jsonObject.getString("ext");
+			}
 		} catch (JSONException e) {
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.yuncore.android.andremote.message.Message#toJSON(org.json.JSONObject)
+	 */
+	@Override
+	public JSONObject toJSON(JSONObject jsonObject) {
+		try {
+			jsonObject.put("errorCode", errorCode);
+			jsonObject.put("appid", appid);
+			jsonObject.put("userId", userId);
+			jsonObject.put("requestId", requestId);
+			jsonObject.put("ext", ext);
+		} catch (JSONException e) {
+		}
+		return super.toJSON(jsonObject);
 	}
 
 }

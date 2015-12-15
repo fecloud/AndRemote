@@ -5,8 +5,11 @@ package com.yuncore.android.andremote;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 import com.yuncore.android.AndRemote;
+import com.yuncore.android.andremote.conf.AppConf;
 import com.yuncore.android.andremote.message.center.MessageCenter;
 import com.yuncore.android.andremote.receiver.OnBindReceiver;
 import com.yuncore.android.andremote.receiver.OnMessageReceiver;
@@ -45,6 +48,7 @@ public class AndRemoteImpl implements AndRemote {
 	@Override
 	public void init(Context mContext) {
 		this.mContext = mContext;
+		setEnv();
 		MessageCenter.init(mContext);
 		register();
 	}
@@ -58,6 +62,20 @@ public class AndRemoteImpl implements AndRemote {
 		onMessageReceiver = new OnMessageReceiver();
 		mContext.registerReceiver(onMessageReceiver, new IntentFilter(
 				ACTION_ONMESSAGE));
+	}
+
+	private void setEnv() {
+
+		try {
+			final PackageInfo pInfo = mContext.getPackageManager()
+					.getPackageInfo(mContext.getPackageName(), 0);
+			final String useragent = "Android "
+					+ android.os.Build.VERSION.RELEASE + " , " + android.os.Build.MODEL
+					+ " , " + android.os.Build.VERSION.SDK + " , "
+					+ mContext.getPackageName() + " , " + pInfo.versionName;
+			AppConf.USER_AGENT = useragent;
+		} catch (NameNotFoundException e) {
+		}
 
 	}
 

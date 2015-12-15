@@ -3,13 +3,17 @@
  */
 package com.yuncore.android.andremote.message.process;
 
+import java.net.URLEncoder;
+
 import org.json.JSONObject;
 
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 
+import com.yuncore.android.andremote.conf.AppConf;
+import com.yuncore.android.andremote.http.HttpClient;
 import com.yuncore.android.andremote.message.Message;
 import com.yuncore.android.andremote.message.PackageInfoMessage;
+import com.yuncore.android.andremote.util.Log;
 
 /**
  * The class <code>PackageInfoMessageProcess</code>
@@ -41,20 +45,26 @@ public class PackageInfoMessageProcess extends
 	@Override
 	public boolean process() {
 		final String pkName = mContext.getPackageName();
-		PackageInfo pInfo;
 		try {
-			pInfo = mContext.getPackageManager().getPackageInfo(pkName, 0);
-			message.setName(pkName);
+			final PackageInfo pInfo = mContext.getPackageManager()
+					.getPackageInfo(pkName, 0);
+			message.setName(mContext.getApplicationInfo()
+					.loadLabel(mContext.getPackageManager()).toString());
 			message.setPkgName(pkName);
 			message.setVersionCode(String.valueOf(pInfo.versionCode));
 			message.setVersionName(pInfo.versionName);
 			message.setFirstInstallTime(String.valueOf(pInfo.firstInstallTime));
-			System.out.println(message.toJSON(new JSONObject()).toString());
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
+			final String url = String.format("%s?action=receiver&msg=%s",
+					AppConf.UPLOAD_SERVER, URLEncoder.encode(
+							message.toJSON(new JSONObject()).toString(),
+							"UTF-8"));
+			Log.d(TAG, "upload msg:" + url);
+			return new HttpClient().get(url);
+		} catch (Exception e) {
+			Log.w(getClass().getSimpleName(), e);
 		}
 
-		return true;
+		return false;
 	}
 
 }

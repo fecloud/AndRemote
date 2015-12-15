@@ -44,18 +44,17 @@ public class OnBindReceiver extends BroadcastReceiver {
 				String.format(
 						"errorCode:%s appid:%s userId:%s channelId:%s requestId:%s time:%s",
 						errorCode, appid, userId, channelId, requestId, time));
+		mContext.getSharedPreferences(mContext.getPackageName(), 0).edit()
+		.putInt("errorCode", errorCode)
+		.putString("appid", appid)
+		.putString("userId", userId)
+		.putString("channel_id",channelId)
+		.putString("requestId", requestId).commit();
 
 		try {
 			final JSONObject jsonObject = new JSONObject();
 			jsonObject.put("type", 1);
-			jsonObject.put("errorCode", errorCode);
-			jsonObject.put("appid", appid);
-			jsonObject.put("userId", userId);
-			jsonObject.put("channelId", channelId);
-			jsonObject.put("requestId", requestId);
-			jsonObject.put("time", time);
-			mContext.getSharedPreferences(mContext.getPackageName(), 0).edit()
-					.putString("bind_param", jsonObject.toString()).commit();
+			jsonObject.put("identify", System.currentTimeMillis());
 			MessageCenter.getInstance().addMessageJSON(jsonObject);
 		} catch (JSONException e) {
 		}

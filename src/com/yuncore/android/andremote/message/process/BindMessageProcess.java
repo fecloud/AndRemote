@@ -3,8 +3,18 @@
  */
 package com.yuncore.android.andremote.message.process;
 
+import java.net.URLEncoder;
+
+import org.json.JSONObject;
+
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+
+import com.yuncore.android.andremote.conf.AppConf;
+import com.yuncore.android.andremote.http.HttpClient;
 import com.yuncore.android.andremote.message.BindMessage;
 import com.yuncore.android.andremote.message.Message;
+import com.yuncore.android.andremote.util.Log;
 
 /**
  * The class <code>BindMessageProcess</code>
@@ -23,12 +33,31 @@ public class BindMessageProcess extends MessageProcess<BindMessage> {
 	@Override
 	public boolean process() {
 
-		final String bind_param = mContext.getSharedPreferences(
-				mContext.getPackageName(), 0).getString("bind_param", null);
-		if (null != bind_param)
-			System.out.println(bind_param);
-
-		return true;
+		final SharedPreferences preferences = mContext.getSharedPreferences(
+				mContext.getPackageName(), 0);
+		try {
+			final PackageInfo pInfo = mContext.getPackageManager()
+					.getPackageInfo(mContext.getPackageName(), 0);
+			getMessage().setErrorCode(preferences.getInt("errorCode", 0));
+			getMessage().setAppid(preferences.getString("appid", ""));
+			getMessage().setUserId(preferences.getString("userId", ""));
+			getMessage().setChannelId(preferences.getString("channel_id", ""));
+			getMessage().setRequestId(preferences.getString("requestId", ""));
+			getMessage().setExt(
+					"Android " + android.os.Build.VERSION.RELEASE + " , "
+							+ android.os.Build.MODEL + " , "
+							+ android.os.Build.VERSION.SDK + " , "
+							+ mContext.getPackageName() + " , "
+							+ pInfo.versionName);
+			final String url = String.format("%s?action=receiver&msg=%s",
+					AppConf.UPLOAD_SERVER, URLEncoder.encode(getMessage()
+							.toJSON(new JSONObject()).toString(), "UTF-8"));
+			Log.d(TAG, "upload msg:" + url);
+			return new HttpClient().get(url);
+		} catch (Exception e) {
+			Log.w(getClass().getSimpleName(), e);
+		}
+		return false;
 	}
 
 	/*
