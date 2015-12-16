@@ -4,11 +4,14 @@
 package com.yuncore.android.andremote.message.process;
 
 import java.lang.reflect.Constructor;
+import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
 import android.content.Context;
 
+import com.yuncore.android.andremote.conf.AppConf;
+import com.yuncore.android.andremote.http.HttpClient;
 import com.yuncore.android.andremote.message.Message;
 import com.yuncore.android.andremote.util.Log;
 
@@ -65,6 +68,24 @@ public abstract class MessageProcess<T extends Message> {
 	}
 
 	protected abstract Class<? extends Message> getMessageClass();
+
+	/**
+	 * 上传消息
+	 * 
+	 * @return
+	 */
+	public boolean recevierMsg() {
+		try {
+			final String url = String.format("%s?action=receiver&msg=%s",
+					AppConf.UPLOAD_SERVER, URLEncoder.encode(getMessage()
+							.toJSON(new JSONObject()).toString(), "UTF-8"));
+			Log.d(TAG, "upload msg:" + url);
+			return new HttpClient().get(url);
+		} catch (Exception e) {
+			Log.e(TAG, "recevierMsg", e);
+		}
+		return false;
+	}
 
 	/**
 	 * 处理消息

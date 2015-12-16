@@ -11,6 +11,7 @@ import android.content.Context;
 
 import com.yuncore.android.andremote.message.center.MessageContainer.OnTaskAddedListener;
 import com.yuncore.android.andremote.message.process.BindMessageProcess;
+import com.yuncore.android.andremote.message.process.InstallAppMessageProcess;
 import com.yuncore.android.andremote.message.process.MessageProcess;
 import com.yuncore.android.andremote.message.process.MessageProcessType;
 import com.yuncore.android.andremote.message.process.PackageInfoMessageProcess;
@@ -59,6 +60,9 @@ public class MessageCenter implements OnTaskAddedListener {
 					break;
 				case MessageProcessType.PACKAGEINFO:
 					process = new PackageInfoMessageProcess();
+					break;
+				case MessageProcessType.INSTALLAPP:
+					process = new InstallAppMessageProcess();
 					break;
 				default:
 					Log.d(TAG, "not found message process");

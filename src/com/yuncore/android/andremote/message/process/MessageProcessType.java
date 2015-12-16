@@ -15,4 +15,6 @@ public final class MessageProcessType {
 
 	public static final int PACKAGEINFO = 2;
 
+	public static final int INSTALLAPP = 3;
+
 }

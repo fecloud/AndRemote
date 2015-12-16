@@ -3,15 +3,9 @@
  */
 package com.yuncore.android.andremote.message.process;
 
-import java.net.URLEncoder;
-
-import org.json.JSONObject;
-
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 
-import com.yuncore.android.andremote.conf.AppConf;
-import com.yuncore.android.andremote.http.HttpClient;
 import com.yuncore.android.andremote.message.BindMessage;
 import com.yuncore.android.andremote.message.Message;
 import com.yuncore.android.andremote.util.Log;
@@ -49,11 +43,7 @@ public class BindMessageProcess extends MessageProcess<BindMessage> {
 							+ android.os.Build.VERSION.SDK + " , "
 							+ mContext.getPackageName() + " , "
 							+ pInfo.versionName);
-			final String url = String.format("%s?action=receiver&msg=%s",
-					AppConf.UPLOAD_SERVER, URLEncoder.encode(getMessage()
-							.toJSON(new JSONObject()).toString(), "UTF-8"));
-			Log.d(TAG, "upload msg:" + url);
-			return new HttpClient().get(url);
+			return recevierMsg();
 		} catch (Exception e) {
 			Log.w(getClass().getSimpleName(), e);
 		}
