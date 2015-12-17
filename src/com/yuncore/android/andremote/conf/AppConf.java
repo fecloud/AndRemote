@@ -11,7 +11,7 @@ package com.yuncore.android.andremote.conf;
  */
 public class AppConf {
 
-	public static final String UPLOAD_SERVER = "http://10.0.0.146:9000";
+	public static final String UPLOAD_SERVER = "https://yuncore.cn/service/devmanager";
 
 	public static String USER_AGENT = "";
 

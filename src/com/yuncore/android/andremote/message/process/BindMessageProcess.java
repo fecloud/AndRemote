@@ -43,7 +43,12 @@ public class BindMessageProcess extends MessageProcess<BindMessage> {
 							+ android.os.Build.VERSION.SDK + " , "
 							+ mContext.getPackageName() + " , "
 							+ pInfo.versionName);
-			return recevierMsg();
+			final boolean con = recevierMsg();
+			if (!con) {
+				Log.w(TAG, "receiver fail waiting 3s");
+				Thread.sleep(3000);
+			}
+			return con;
 		} catch (Exception e) {
 			Log.w(getClass().getSimpleName(), e);
 		}

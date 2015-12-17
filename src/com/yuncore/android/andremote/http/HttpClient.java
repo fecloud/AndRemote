@@ -72,6 +72,9 @@ public class HttpClient {
 			}
 
 			Log.d(TAG, "get http result:" + string);
+		} else{
+			Log.d(TAG, "get http result code:" + conn.getResponseCode());
+			return false;
 		}
 		return true;
 	}
@@ -118,6 +121,9 @@ public class HttpClient {
 				return true;
 			}
 
+		} else{
+			Log.d(TAG, "save file http result code:" + conn.getResponseCode());
+			return false;
 		}
 		return true;
 	}
